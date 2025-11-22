@@ -477,7 +477,8 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
         public virtual void OnRealtimeLoop(VmmScatter scatter)
         {
             scatter.PrepareReadValue<Vector2>(RotationAddress); // Rotation
-            scatter.PrepareReadArray<TrsX>(SkeletonRoot.VerticesAddr, _verticesCount > 0 ? _verticesCount : SkeletonRoot.Count); // ESP Vertices
+            int requestedVertices = _verticesCount > 0 ? _verticesCount : SkeletonRoot.Count;
+            scatter.PrepareReadArray<TrsX>(SkeletonRoot.VerticesAddr, requestedVertices); // ESP Vertices
 
             scatter.Completed += (sender, s) =>
             {
@@ -486,7 +487,7 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
                 if (s.ReadValue<Vector2>(RotationAddress, out var rotation))
                     successRot = SetRotation(rotation);
 
-                if (s.ReadArray<TrsX>(SkeletonRoot.VerticesAddr, _verticesCount > 0 ? _verticesCount : SkeletonRoot.Count) is PooledMemory<TrsX> vertices)
+                if (s.ReadArray<TrsX>(SkeletonRoot.VerticesAddr, requestedVertices) is PooledMemory<TrsX> vertices)
                 {
                     using (vertices)
                     {
@@ -494,6 +495,29 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
                         {
                             try
                             {
+                                // Ensure the buffer length matches or exceeds all tracked transforms
+                                int available = vertices.Span.Length;
+                                int required = SkeletonRoot.Count;
+                                foreach (var bone in PlayerBones.Values)
+                                {
+                                    if (bone.Count > required)
+                                        required = bone.Count;
+                                }
+
+                                if (available < required)
+                                {
+                                    if (!_skeletonErrorLogged)
+                                    {
+                                        DebugLogger.LogDebug($"Skipping skeleton update for Player '{Name ?? "Unknown"}': vertices {available} < required {required}");
+                                        _skeletonErrorLogged = true;
+                                    }
+                                    _verticesCount = 0; // force re-request next loop
+                                    successPos = false;
+                                    return;
+                                }
+
+                                _verticesCount = available;
+
                                 _ = SkeletonRoot.UpdatePosition(vertices.Span);
                                 foreach (var bone in PlayerBones.Values)
                                 {
@@ -552,6 +576,7 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
                                 DebugLogger.LogDebug($"WARNING - SkeletonRoot Transform has changed for Player '{Name}'");
                                 var transform = new UnityTransform(SkeletonRoot.TransformInternal);
                                 SkeletonRoot = transform;
+                                _verticesCount = 0; // force fresh vertex count on next read
                             }
                         }
                     };
