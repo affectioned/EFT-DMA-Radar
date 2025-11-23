@@ -86,7 +86,7 @@ namespace LoneEftDmaRadar.Tarkov.Features.MemWrites
                 {
                     //Debug.WriteLine("[NoRecoil] PWA is invalid - no weapon equipped?");
                     if (stateChanged)
-                        //Debug.WriteLine("[NoRecoil] Enabled but PWA invalid ¨C waiting for raid/weapon");
+                        //Debug.WriteLine("[NoRecoil] Enabled but PWA invalid Â¨C waiting for raid/weapon");
                     ClearCache();
                     _lastEnabledState = Enabled;
                     return;
@@ -115,9 +115,10 @@ private void ApplyNoRecoil(LocalPlayer localPlayer)
 
     try
     {
-        // For testing - hardcoded values
-        float recoilAmount = 0.1f;
-        float swayAmount   = 0.1f;
+        // Convert UI percentages (0 = normal, 100 = fully removed) into intensity scalars.
+        // 1.0 = default behaviour, 0 = fully removed.
+        float recoilAmount = Math.Clamp(1f - (App.Config.MemWrites.NoRecoilAmount / 100f), 0f, 1f);
+        float swayAmount   = Math.Clamp(1f - (App.Config.MemWrites.NoSwayAmount   / 100f), 0f, 1f);
 
         //Debug.WriteLine($"[NoRecoil] Target - RecoilAmount: {recoilAmount:F3}, SwayAmount: {swayAmount:F3}");
 

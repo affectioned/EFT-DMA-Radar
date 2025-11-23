@@ -20,12 +20,27 @@
                      x:Name="RadarTab">
                 <tabs:RadarTab x:Name="Radar" />
             </TabItem>
+
             <TabItem Header="Settings">
-                <tabs:SettingsTab x:Name="Settings" />
+                <TabControl Margin="4">
+                    <TabItem Header="General">
+                        <tabs:SettingsTab x:Name="Settings" />
+                    </TabItem>
+                    <TabItem Header="ESP Fuser">
+                        <tabs:EspSettingsTab x:Name="EspSettings" />
+                    </TabItem>
+                    <TabItem Header="Loot Filters">
+                        <tabs:LootFiltersTab x:Name="LootFilters"/>
+                    </TabItem>
+                    <TabItem Header="Makcu Aimbot">
+                        <tabs:MakcuTab x:Name="Makcu" />
+                    </TabItem>
+                    <TabItem Header="MemWrites">
+                        <tabs:MemWritesTab x:Name="MemWrites" />
+                    </TabItem>
+                </TabControl>
             </TabItem>
-            <TabItem Header="ESP Fuser">
-                <tabs:EspSettingsTab x:Name="EspSettings" />
-            </TabItem>
+
             <TabItem Header="Web Radar">
                 <tabs:WebRadarTab x:Name="WebRadar" />
             </TabItem>
@@ -35,17 +50,8 @@
             <TabItem Header="Player Watchlist">
                 <tabs:PlayerWatchlistTab x:Name="PlayerWatchlist"/>
             </TabItem>
-            <TabItem Header="Loot Filters">
-                <tabs:LootFiltersTab x:Name="LootFilters"/>
-            </TabItem>
             <TabItem Header="Debug">
                 <tabs:DebugTab x:Name="DebugTab" />
-            </TabItem>
-            <TabItem Header="MakcuAimbot">
-                <tabs:MakcuTab x:Name="Makcu" />
-            </TabItem>
-            <TabItem Header="MemWrites">
-                <tabs:MemWritesTab x:Name="MemWrites" />
             </TabItem>
         </TabControl>
     </Grid>

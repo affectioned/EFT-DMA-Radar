@@ -762,6 +762,25 @@ namespace LoneEftDmaRadar
         [JsonPropertyName("espMaxFPS")]
         public int EspMaxFPS { get; set; } = 0;
 
+        // ESP Colors (independent from radar colors)
+        [JsonPropertyName("espColorPlayers")]
+        public string EspColorPlayers { get; set; } = "#FFFFFFFF";
+
+        [JsonPropertyName("espColorAI")]
+        public string EspColorAI { get; set; } = "#FFFFA500";
+
+        [JsonPropertyName("espColorLoot")]
+        public string EspColorLoot { get; set; } = "#FFD0D0D0";
+
+        [JsonPropertyName("espColorExfil")]
+        public string EspColorExfil { get; set; } = "#FF7FFFD4";
+
+        [JsonPropertyName("espColorCrosshair")]
+        public string EspColorCrosshair { get; set; } = "#FFFFFFFF";
+
+        [JsonPropertyName("espColorHeadCircle")]
+        public string EspColorHeadCircle { get; set; } = "#FFFFFFFF";
+
         /// <summary>
         /// Radar Max FPS (0 = unlimited). Lowering this can free headroom for ESP.
         /// </summary>

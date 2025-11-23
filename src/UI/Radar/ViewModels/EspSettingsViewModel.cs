@@ -482,6 +482,44 @@ namespace LoneEftDmaRadar.UI.Radar.ViewModels
             }
         }
 
+        #region Colors
+        public string EspColorPlayers
+        {
+            get => App.Config.UI.EspColorPlayers;
+            set { App.Config.UI.EspColorPlayers = value; OnPropertyChanged(); }
+        }
+
+        public string EspColorAI
+        {
+            get => App.Config.UI.EspColorAI;
+            set { App.Config.UI.EspColorAI = value; OnPropertyChanged(); }
+        }
+
+        public string EspColorLoot
+        {
+            get => App.Config.UI.EspColorLoot;
+            set { App.Config.UI.EspColorLoot = value; OnPropertyChanged(); }
+        }
+
+        public string EspColorExfil
+        {
+            get => App.Config.UI.EspColorExfil;
+            set { App.Config.UI.EspColorExfil = value; OnPropertyChanged(); }
+        }
+
+        public string EspColorCrosshair
+        {
+            get => App.Config.UI.EspColorCrosshair;
+            set { App.Config.UI.EspColorCrosshair = value; OnPropertyChanged(); }
+        }
+
+        public string EspColorHeadCircle
+        {
+            get => App.Config.UI.EspColorHeadCircle;
+            set { App.Config.UI.EspColorHeadCircle = value; OnPropertyChanged(); }
+        }
+        #endregion
+
         public int EspScreenWidth
         {
             get => App.Config.UI.EspScreenWidth;

@@ -44,8 +44,6 @@ namespace LoneEftDmaRadar.UI.ESP
         // Cached Fonts/Paints
         private readonly SKPaint _skeletonPaint;
         private readonly SKPaint _boxPaint;
-        private readonly SKPaint _lootPaint;
-        private readonly SKPaint _lootTextPaint;
         private readonly SKPaint _crosshairPaint;
         private static readonly SKColor[] _espGroupPalette = new SKColor[]
         {
@@ -140,19 +138,6 @@ namespace LoneEftDmaRadar.UI.ESP
                 StrokeWidth = 1.0f,
                 IsAntialias = false, // Crisper boxes
                 Style = SKPaintStyle.Stroke
-            };
-
-            _lootPaint = new SKPaint
-            {
-                Color = SKColors.LightGray,
-                Style = SKPaintStyle.Fill,
-                IsAntialias = true
-            };
-
-             _lootTextPaint = new SKPaint
-            {
-                Color = SKColors.Silver,
-                Style = SKPaintStyle.Fill
             };
 
             _crosshairPaint = new SKPaint
@@ -319,8 +304,8 @@ namespace LoneEftDmaRadar.UI.ESP
                                              _ => SKPaints.PaintExfilOpen
                                          };
                                          
-                                         ctx.DrawCircle(ToRaw(screen), 4f, ToColor(paint), true);
-                                         ctx.DrawText(exfil.Name, screen.X + 6, screen.Y + 4, ToColor(SKPaints.TextExfil), DxTextSize.Medium);
+                                         ctx.DrawCircle(ToRaw(screen), 4f, GetExfilColorForRender(), true);
+                                         ctx.DrawText(exfil.Name, screen.X + 6, screen.Y + 4, GetExfilColorForRender(), DxTextSize.Medium);
                                      }
                                 }
                             }
@@ -404,48 +389,42 @@ namespace LoneEftDmaRadar.UI.ESP
                          inCone = screenAngle <= App.Config.UI.EspLootConeAngle;
                      }
 
-                     // Determine colors based on item type
-                     SKPaint circlePaint, textPaint;
+                     // Determine colors based on item type (default to user-selected loot color).
+                     DxColor circleColor = GetLootColorForRender();
+                     DxColor textColor = circleColor;
 
                      if (item.Important)
                      {
-                         // Filtered important items (custom filters) - Purple
-                         circlePaint = SKPaints.PaintFilteredLoot;
-                         textPaint = SKPaints.TextFilteredLoot;
+                         circleColor = ToColor(SKPaints.PaintFilteredLoot);
+                         textColor = circleColor;
                      }
                      else if (item.IsValuableLoot)
                      {
-                         // Valuable items (price >= minValueValuable) - Turquoise
-                         circlePaint = SKPaints.PaintImportantLoot;
-                         textPaint = SKPaints.TextImportantLoot;
+                         circleColor = ToColor(SKPaints.PaintImportantLoot);
+                         textColor = circleColor;
                      }
                      else if (isBackpack)
                      {
-                         circlePaint = SKPaints.PaintBackpacks;
-                         textPaint = SKPaints.TextBackpacks;
+                         circleColor = ToColor(SKPaints.PaintBackpacks);
+                         textColor = circleColor;
                      }
                      else if (isMeds)
                      {
-                         circlePaint = SKPaints.PaintMeds;
-                         textPaint = SKPaints.TextMeds;
+                         circleColor = ToColor(SKPaints.PaintMeds);
+                         textColor = circleColor;
                      }
                      else if (isFood)
                      {
-                         circlePaint = SKPaints.PaintFood;
-                         textPaint = SKPaints.TextFood;
+                         circleColor = ToColor(SKPaints.PaintFood);
+                         textColor = circleColor;
                      }
                      else if (isCorpse)
                      {
-                         circlePaint = SKPaints.PaintCorpse;
-                         textPaint = SKPaints.TextCorpse;
-                     }
-                     else
-                     {
-                         circlePaint = _lootPaint;
-                         textPaint = _lootTextPaint;
+                         circleColor = ToColor(SKPaints.PaintCorpse);
+                         textColor = circleColor;
                      }
 
-                     ctx.DrawCircle(ToRaw(screen), 2f, ToColor(circlePaint), true);
+                     ctx.DrawCircle(ToRaw(screen), 2f, circleColor, true);
 
                      if (item.Important || inCone)
                      {
@@ -472,8 +451,8 @@ namespace LoneEftDmaRadar.UI.ESP
                                      : $"{shortName} ({LoneEftDmaRadar.Misc.Utilities.FormatNumberKM(item.Price)})";
                              }
                          }
-                         ctx.DrawText(text, screen.X + 4, screen.Y + 4, ToColor(textPaint), DxTextSize.Small);
-                     }
+                         ctx.DrawText(text, screen.X + 4, screen.Y + 4, textColor, DxTextSize.Small);
+                    }
                 }
             }
         }
@@ -503,7 +482,7 @@ namespace LoneEftDmaRadar.UI.ESP
                 return;
 
             // Get Color
-            var color = ToColor(GetPlayerColor(player));
+            var color = GetPlayerColorForRender(player);
 
             bool drawSkeleton = isAI ? App.Config.UI.EspAISkeletons : App.Config.UI.EspPlayerSkeletons;
             bool drawBox = isAI ? App.Config.UI.EspAIBoxes : App.Config.UI.EspPlayerBoxes;
@@ -557,7 +536,7 @@ namespace LoneEftDmaRadar.UI.ESP
                     }
 
                     radius = Math.Clamp(radius, 2f, 12f);
-                    ctx.DrawCircle(ToRaw(headScreen), radius, color, filled: false);
+                    ctx.DrawCircle(ToRaw(headScreen), radius, GetHeadCircleColor(player), filled: false);
                 }
             }
 
@@ -779,7 +758,7 @@ namespace LoneEftDmaRadar.UI.ESP
             float centerY = height / 2f;
             float length = MathF.Max(2f, App.Config.UI.EspCrosshairLength);
 
-            var color = ToColor(_crosshairPaint);
+            var color = GetCrosshairColor();
             ctx.DrawLine(new RawVector2(centerX - length, centerY), new RawVector2(centerX + length, centerY), color, _crosshairPaint.StrokeWidth);
             ctx.DrawLine(new RawVector2(centerX, centerY - length), new RawVector2(centerX, centerY + length), color, _crosshairPaint.StrokeWidth);
         }
@@ -797,6 +776,45 @@ namespace LoneEftDmaRadar.UI.ESP
         private static DxColor ToColor(SKColor color) => new(color.Blue, color.Green, color.Red, color.Alpha);
 
         #endregion
+
+        private DxColor GetPlayerColorForRender(AbstractPlayer player)
+        {
+            var cfg = App.Config.UI;
+            var basePaint = GetPlayerColor(player);
+
+            // Preserve special colouring (local, focused, watchlist/streamer, teammates).
+            if (player is LocalPlayer || player.IsFocused ||
+                player.Type is PlayerType.SpecialPlayer or PlayerType.Streamer or PlayerType.Teammate)
+            {
+                return ToColor(basePaint);
+            }
+
+            // Respect group/faction colours when enabled.
+            if (!player.IsAI)
+            {
+                if (cfg.EspGroupColors && player.GroupID >= 0)
+                    return ToColor(basePaint);
+                if (cfg.EspFactionColors && player.IsPmc)
+                    return ToColor(basePaint);
+            }
+
+            // Fallback to user-configured player/AI colours.
+            return ToColor(ColorFromHex(player.IsAI ? cfg.EspColorAI : cfg.EspColorPlayers));
+        }
+
+        private DxColor GetLootColorForRender() => ToColor(ColorFromHex(App.Config.UI.EspColorLoot));
+        private DxColor GetExfilColorForRender() => ToColor(ColorFromHex(App.Config.UI.EspColorExfil));
+        private DxColor GetCrosshairColor() => ToColor(ColorFromHex(App.Config.UI.EspColorCrosshair));
+        private DxColor GetHeadCircleColor(AbstractPlayer player) =>
+            ToColor(ColorFromHex(App.Config.UI.EspColorHeadCircle));
+
+        private static SKColor ColorFromHex(string hex)
+        {
+            if (string.IsNullOrWhiteSpace(hex))
+                return SKColors.White;
+            try { return SKColor.Parse(hex); }
+            catch { return SKColors.White; }
+        }
 
         private void ApplyDxFontConfig()
         {
@@ -958,8 +976,6 @@ namespace LoneEftDmaRadar.UI.ESP
                 _dxOverlay?.Dispose();
                 _skeletonPaint.Dispose();
                 _boxPaint.Dispose();
-                _lootPaint.Dispose();
-                _lootTextPaint.Dispose();
                 _crosshairPaint.Dispose();
             }
             catch (Exception ex)
