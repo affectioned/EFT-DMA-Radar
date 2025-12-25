@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Lone EFT DMA Radar
  * Brought to you by Lone (Lone DMA)
  * 
@@ -133,6 +133,11 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Loot
         /// True if this item is marked as a quest item by the game data.
         /// </summary>
         public bool IsQuestItem => _isQuestItem;
+
+        /// <summary>
+        /// True if this item is needed for an active quest.
+        /// </summary>
+        public bool IsQuestHelperItem => App.Config.QuestHelper.Enabled && (Memory.QuestManager?.ItemConditions?.ContainsKey(ID) ?? false);
 
         /// <summary>
         /// True if the item is blacklisted via the UI.
@@ -282,6 +287,8 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Loot
         {
             if (IsQuestItem)
                 return new(SKPaints.PaintQuestItem, SKPaints.TextQuestItem);
+            if (IsQuestHelperItem)
+                return new(SKPaints.PaintQuestHelperItem, SKPaints.TextQuestHelperItem);
             if (LootFilter.ShowBackpacks && IsBackpack)
                 return new(SKPaints.PaintBackpacks, SKPaints.TextBackpacks);
             if (LootFilter.ShowMeds && IsMeds)

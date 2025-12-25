@@ -32,6 +32,7 @@ using LoneEftDmaRadar.Tarkov.GameWorld.Exits;
 using LoneEftDmaRadar.Tarkov.GameWorld.Explosives;
 using LoneEftDmaRadar.Tarkov.GameWorld.Loot;
 using LoneEftDmaRadar.Tarkov.GameWorld.Player;
+using LoneEftDmaRadar.Tarkov.GameWorld.Quests;
 using LoneEftDmaRadar.UI.Loot;
 using LoneEftDmaRadar.UI.Misc;
 using LoneEftDmaRadar.UI.Radar.Maps;
@@ -131,12 +132,15 @@ namespace LoneEftDmaRadar.UI.Radar.ViewModels
                 var containers = App.Config.Loot.Enabled && App.Config.Containers.Enabled ?
                     Containers ?? Enumerable.Empty<IMouseoverEntity>() : Enumerable.Empty<IMouseoverEntity>();
                 var exits = Exits ?? Enumerable.Empty<IMouseoverEntity>();
+                var quests = App.Config.QuestHelper.Enabled
+                    ? Memory.QuestManager?.LocationConditions?.Values?.OfType<IMouseoverEntity>() ?? Enumerable.Empty<IMouseoverEntity>()
+                    : Enumerable.Empty<IMouseoverEntity>();
 
                 if (FilterIsSet && !(MainWindow.Instance?.Radar?.Overlay?.ViewModel?.HideCorpses ?? false)) // Item Search
                     players = players.Where(x =>
                         x.LootObject is null || !loot.Contains(x.LootObject)); // Don't show both corpse objects
 
-                var result = loot.Concat(containers).Concat(players).Concat(exits);
+                var result = loot.Concat(containers).Concat(players).Concat(exits).Concat(quests);
                 return result.Any() ? result : null;
             }
         }
@@ -393,6 +397,17 @@ namespace LoneEftDmaRadar.UI.Radar.ViewModels
                         foreach (var exit in exits)
                         {
                             exit.Draw(canvas, mapParams, localPlayer);
+                        }
+                    }
+
+                    if (App.Config.QuestHelper.Enabled)
+                    {
+                        if (Memory.QuestManager?.LocationConditions?.Values is IEnumerable<QuestLocation> questLocations)
+                        {
+                            foreach (var loc in questLocations)
+                            {
+                                loc.Draw(canvas, mapParams, localPlayer);
+                            }
                         }
                     }
 
@@ -837,6 +852,11 @@ namespace LoneEftDmaRadar.UI.Radar.ViewModels
 
                     case IExitPoint exit:
                         _mouseOverItem = closest;
+                        MouseoverGroup = null;
+                        break;
+
+                    case QuestLocation quest:
+                        _mouseOverItem = quest;
                         MouseoverGroup = null;
                         break;
 
