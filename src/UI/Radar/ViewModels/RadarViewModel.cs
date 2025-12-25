@@ -634,14 +634,12 @@ namespace LoneEftDmaRadar.UI.Radar.ViewModels
         /// </summary>
         public void SwitchFollowTarget()
         {
-            // Get teammates (players in the same group and not local player)
             var teammates = AllPlayers?.Where(p =>
                 p != LocalPlayer &&
                 !p.HasExfild &&
                 p.IsAlive &&
-                p.IsFriendlyActive &&
-                p.GroupID == LocalPlayer?.GroupID &&
-                p.GroupID != -1
+                p.IsActive &&
+                (p.IsFriendly || (p.GroupID == LocalPlayer?.GroupID && p.GroupID != -1))
             ).ToList();
 
             if (teammates == null || teammates.Count == 0)
