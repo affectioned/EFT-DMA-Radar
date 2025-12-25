@@ -621,17 +621,6 @@ namespace LoneEftDmaRadar.DMA
         }
 
         /// <summary>
-        /// Read null terminated Unicode string.
-        /// </summary>
-        public static string ReadUnicodeString(ulong addr, int cb = 128, bool useCache = true)
-        {
-            ArgumentOutOfRangeException.ThrowIfGreaterThan(cb, 0x1000, nameof(cb));
-            var flags = useCache ? VmmFlags.NONE : VmmFlags.NOCACHE;
-            return _vmm.MemReadString(_pid, addr + 0x14, cb, Encoding.Unicode, flags) ??
-                throw new VmmException("Memory Read Failed!");
-        }
-
-        /// <summary>
         /// Read null terminated Unity string (Unicode Encoding).
         /// </summary>
         public static string ReadUnityString(ulong addr, int cb = 128, bool useCache = true)
