@@ -303,16 +303,14 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
 
             foreach (var team in teams)
             {
-                if (team.Count == 1) // Skip solo players
-                {
-                    continue;
-                }
-
                 bool isLocalPlayerTeam = team.Any(p =>
                 {
-                    if (!ValidPosition(p.Position) || !ValidPosition(localPlayer.Position))
+                    if (!ValidPosition(p.Position))
                         return false;
-                    var dist = Vector3.Distance(p.Position, localPlayer.Position);
+                    var localPos = localPlayer.Position;
+                    if (!ValidPosition(localPos))
+                        return false;
+                    var dist = Vector3.Distance(p.Position, localPos);
                     return dist <= TeammateDetectionDistance;
                 });
 
@@ -330,7 +328,7 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
                     }
                     DebugLogger.LogDebug($"[TeamDetection] Detected {team.Count} teammate(s) nearby - assigned GroupID {LocalPlayerTeamGroupId}");
                 }
-                else
+                else if (team.Count > 1) // Only assign GroupID to non-solo enemy teams
                 {
                     int enemyGroupId = Interlocked.Increment(ref _lastGroupNumber);
                     totalEnemyTeams++;
