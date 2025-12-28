@@ -145,7 +145,7 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
         /// <summary>
         /// Distance threshold for team detection (in meters).
         /// </summary>
-        private const float TeammateDetectionDistance = 20.0f;
+        private const float TeammateDetectionDistance = 15.0f;
 
         /// <summary>
         /// Fixed GroupID assigned to local player's team.
