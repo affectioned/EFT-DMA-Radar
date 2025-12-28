@@ -1,4 +1,5 @@
-﻿using LoneEftDmaRadar.Tarkov.Unity.Collections;
+﻿using LoneEftDmaRadar.Tarkov.GameWorld.Camera;
+using LoneEftDmaRadar.Tarkov.Unity.Collections;
 using LoneEftDmaRadar.UI.Misc;
 using LoneEftDmaRadar.Web.TarkovDev.Data;
 using System.Collections.Frozen;
@@ -146,6 +147,10 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player.Helpers
         private void GetHands()
         {
             if (!_player.IsHuman) // Don't care about non-human players' hands
+                return;
+
+            // Wait until CameraManager is initialized (raid has started)
+            if (!CameraManager.IsInitialized)
                 return;
 
             try
