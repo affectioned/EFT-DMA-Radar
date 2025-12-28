@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Runtime.InteropServices;
 using ImGuiNET;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.DXGI;
 using Vortice.Mathematics;
 using WinForms = System.Windows.Forms;
-using DataStream = Vortice.DataStream;
 
 namespace LoneEftDmaRadar.UI.ESP
 {
@@ -169,7 +164,9 @@ namespace LoneEftDmaRadar.UI.ESP
             {
                 if (!_isDeviceInitialized) return;
                 
+#pragma warning disable CS8625
                 _deviceContext.OMSetRenderTargets((ID3D11RenderTargetView)null, null);
+#pragma warning restore CS8625
                 _renderTargetView?.Dispose();
                 
                 _swapChain.ResizeBuffers(0, (uint)Math.Max(Width, 1), (uint)Math.Max(Height, 1), Format.Unknown, SwapChainFlags.None);
@@ -251,7 +248,7 @@ namespace LoneEftDmaRadar.UI.ESP
             float B = drawData.DisplayPos.Y + drawData.DisplaySize.Y;
             var mvp = Matrix4x4.CreateOrthographicOffCenter(L, R, B, T, -1.0f, 1.0f);
             
-            _deviceContext.UpdateSubresource(ref mvp, _constantBuffer);
+            _deviceContext.UpdateSubresource(in mvp, _constantBuffer);
 
             _deviceContext.IASetInputLayout(_inputLayout);
             _deviceContext.VSSetShader(_vertexShader);
