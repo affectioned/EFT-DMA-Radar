@@ -146,8 +146,6 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player.Helpers
 
         private void GetHands()
         {
-            if (!_player.IsHuman) // Don't care about non-human players' hands
-                return;
 
             // Wait until CameraManager is initialized (raid has started)
             if (!CameraManager.IsInitialized)
