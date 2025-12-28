@@ -481,6 +481,24 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
             }
         }
 
+        /// <summary>
+        /// Detects Zryachiy (Lighthouse Boss) by checking equipment IDs.
+        /// Zryachiy has specific equipment: 63626d904aa74b8fe30ab426, 636270263f2495c26f00b007.
+        /// </summary>
+        public static void DetectZryachiy(IEnumerable<AbstractPlayer> allPlayers)
+        {
+            if (allPlayers == null)
+                return;
+
+            foreach (var player in allPlayers)
+            {
+                if (player is ObservedPlayer obs)
+                {
+                    obs.CheckZryachiy();
+                }
+            }
+        }
+
         #endregion
 
         #region Cached Skia Paths
