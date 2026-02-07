@@ -57,7 +57,7 @@ namespace SDK
 
         public readonly partial struct SynchronizableObjectLogicProcessor
         {
-            public const uint SynchronizableObjects = 0x18; // System.Collections.Generic.List<SynchronizableObject>
+            public const uint _staticSynchronizableObject = 0x18; // System.Collections.Generic.List<SynchronizableObject>
         }
 
         public readonly partial struct TripwireSynchronizableObject
@@ -79,7 +79,7 @@ namespace SDK
 
         public readonly partial struct BTRTurretView
         {
-            public const uint AttachedBot = 0x60; // System.ValueTuple<ObservedPlayerView, Boolean>
+            public const uint _bot = 0x60; // System.ValueTuple<ObservedPlayerView, Boolean>
         }
 
         public readonly partial struct Throwable
@@ -168,7 +168,7 @@ namespace SDK
 
         public readonly partial struct MovementContext // EFT, class: MovementContext
         {
-            public const uint Player = 0x48; // EFT.Player
+            public const uint _player = 0x48; // EFT.Player
             public const uint _rotation = 0xC8; // UnityEngine.Vector2
             public const uint PlantState = 0x78; // EFT.BaseMovementState <PlantState> PlantState
             public const uint CurrentState = 0x1F0; // EFT.BaseMovementState <CurrentState>k__BackingField
