@@ -1231,21 +1231,38 @@ namespace LoneEftDmaRadar.Tarkov.GameWorld.Player
         /// <param name="round2">Index (round 2)</param>
         public virtual void OnValidateTransforms(VmmScatter round1, VmmScatter round2)
         {
-            round1.PrepareReadPtr(SkeletonRoot.TransformInternal + UnityOffsets.TransformAccess_HierarchyOffset); // Bone Hierarchy
+            round1.PrepareReadPtr(SkeletonRoot.TransformInternal + UnitySDK.UnityOffsets.TransformAccess_HierarchyOffset); // Bone Hierarchy
             round1.Completed += (sender, x1) =>
             {
-                if (x1.ReadPtr(SkeletonRoot.TransformInternal + UnityOffsets.TransformAccess_HierarchyOffset, out var tra))
+                if (x1.ReadPtr(SkeletonRoot.TransformInternal + UnitySDK.UnityOffsets.TransformAccess_HierarchyOffset, out var tra))
                 {
-                    round2.PrepareReadPtr(tra + UnityOffsets.Hierarchy_VerticesOffset); // Vertices Ptr
+                    round2.PrepareReadPtr(tra + UnitySDK.UnityOffsets.Hierarchy_VerticesOffset); // Vertices Ptr
                     round2.Completed += (sender, x2) =>
                     {
-                        if (x2.ReadPtr(tra + UnityOffsets.Hierarchy_VerticesOffset, out var verticesPtr))
+                        if (x2.ReadPtr(tra + UnitySDK.UnityOffsets.Hierarchy_VerticesOffset, out var verticesPtr))
                         {
                             if (SkeletonRoot.VerticesAddr != verticesPtr) // check if any addr changed
                             {
-                                DebugLogger.LogWarning($"WARNING - SkeletonRoot Transform has changed for Player '{Name}'");
+                                DebugLogger.LogDebug($"WARNING - SkeletonRoot Transform has changed for Player '{Name}'");
                                 var transform = new UnityTransform(SkeletonRoot.TransformInternal);
                                 SkeletonRoot = transform;
+                                _verticesCount = 0; // force fresh vertex count on next read
+
+                                // IMPORTANT: also rebuild all bone transforms and skeleton wrapper
+                                try
+                                {
+                                    foreach (var bone in PlayerBones.Keys.ToList())
+                                    {
+                                        ResetBoneTransform(bone);
+                                    }
+
+                                    Skeleton = new PlayerSkeleton(SkeletonRoot, PlayerBones);
+                                    DebugLogger.LogDebug($"Skeleton rebuilt for Player '{Name}'");
+                                }
+                                catch (Exception ex)
+                                {
+                                    DebugLogger.LogDebug($"ERROR rebuilding skeleton for '{Name}': {ex}");
+                                }
                             }
                         }
                     };
