@@ -205,11 +205,11 @@ namespace LoneEftDmaRadar.Tarkov.Features.MemWrites
                 if (!patchState.IsValidUserVA())
                     return;
 
-                var targetHash = Memory.ReadValue<int>(patchState + Offsets.MovementState.AnimatorStateHash, false);
+                var targetHash = Memory.ReadValue<int>(patchState + Offsets.BaseMovementState.AnimatorStateHash, false);
 
                 Memory.WriteValue(originalStateContainer + Offsets.PlayerStateContainer.StateFullNameHash, targetHash);
-                Memory.WriteValue(originalState + Offsets.MovementState.AnimatorStateHash, targetHash);
-                Memory.WriteValue(originalState + Offsets.MovementState.Name, INF_STAM_TARGET_STATE_NAME);
+                Memory.WriteValue(originalState + Offsets.BaseMovementState.AnimatorStateHash, targetHash);
+                Memory.WriteValue(originalState + Offsets.BaseMovementState.Name, INF_STAM_TARGET_STATE_NAME);
 
                 _bypassApplied = true;
             }
@@ -227,7 +227,7 @@ namespace LoneEftDmaRadar.Tarkov.Features.MemWrites
 
                 originalState = states
                     .FirstOrDefault(x =>
-                        Memory.ReadValue<byte>(x.Value + Offsets.MovementState.Name, false) ==
+                        Memory.ReadValue<byte>(x.Value + Offsets.BaseMovementState.Name, false) ==
                         INF_STAM_SOURCE_STATE_NAME)
                     .Value;
 
@@ -239,7 +239,7 @@ namespace LoneEftDmaRadar.Tarkov.Features.MemWrites
 
                 patchState = states
                     .First(x =>
-                        Memory.ReadValue<byte>(x.Value + Offsets.MovementState.Name, false) ==
+                        Memory.ReadValue<byte>(x.Value + Offsets.BaseMovementState.Name, false) ==
                         INF_STAM_TARGET_STATE_NAME)
                     .Value;
             }
